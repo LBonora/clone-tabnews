@@ -1,2 +1,2 @@
 # clone-tabnews
-Para acompanha o https://curso.dev
+Para acompanhar o https://curso.dev
