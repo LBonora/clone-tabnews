@@ -1,3 +1,9 @@
+import orchestrator from "tests/orchestrator.js";
+
+beforeAll(async () => {
+  await orchestrator.waitForAllServices();
+});
+
 test("Not allowed methods to api/v1/migrations should return 405", async () => {
   const notAllowedMethods = ["PUT", "DELETE", "PATCH"];
   for (const method of notAllowedMethods) {
