@@ -4,12 +4,21 @@ beforeAll(async () => {
   await orchestrator.waitForAllServices();
 });
 
-test("Not allowed methods to api/v1/migrations should return 405", async () => {
-  const notAllowedMethods = ["PUT", "DELETE", "PATCH"];
-  for (const method of notAllowedMethods) {
-    let response = await fetch("http://localhost:3000/api/v1/migrations", {
-      method: method,
+describe("Not allowed methods api/v1/migrations", () => {
+  describe("Anonymous user", () => {
+    describe("Trying bad requests", () => {
+      const notAllowedMethods = ["PUT", "PATCH", "DELETE"];
+      for (const method of notAllowedMethods) {
+        test(`${method} attempt`, async () => {
+          const response = await fetch(
+            "http://localhost:3000/api/v1/migrations",
+            {
+              method: method,
+            },
+          );
+          expect(response.status).toBe(405);
+        });
+      }
     });
-    expect(response.status).toBe(405);
-  }
+  });
 });
