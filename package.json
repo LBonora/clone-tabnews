@@ -4,9 +4,8 @@
   "description": "Para acompanhar o https://curso.dev",
   "main": "index.js",
   "scripts": {
-    "dev": "npm run services:up && npm run services:wait:database && npm run migrations:up && next dev",
-    "test": "npm run services:up && concurrently -n next,jest --hide next -k -s command-jest --prefix none \"next dev\" \"jest --runInBand\"",
-    "posttest": "npm run services:stop",
+    "dev": "trap \"\" INT TERM && trap \"npm run services:stop\" 0 EXIT && npm run services:up && npm run services:wait:database && npm run migrations:up && next dev",
+    "test": "trap \"\" INT TERM && trap \"npm run services:stop\" 0 EXIT && npm run services:up && concurrently -n next,jest --hide next -k -s command-jest --prefix none \"next dev\" \"jest --runInBand\"",
     "test:watch": "jest --watchAll --runInBand --verbose",
     "services:up": "docker compose -f infra/compose.yaml up -d",
     "services:stop": "docker compose -f infra/compose.yaml stop",
