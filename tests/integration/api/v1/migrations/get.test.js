@@ -1,10 +1,9 @@
 import orchestrator from "tests/orchestrator.js";
 
-beforeAll(cleanDatabase);
-async function cleanDatabase() {
+beforeAll(async () => {
   await orchestrator.waitForAllServices();
   await orchestrator.clearDatabase();
-}
+});
 
 describe("GET api/v1/migrations", () => {
   describe("Anonymous user", () => {

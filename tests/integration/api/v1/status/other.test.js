@@ -4,18 +4,15 @@ beforeAll(async () => {
   await orchestrator.waitForAllServices();
 });
 
-describe("Not allowed methods api/v1/migrations", () => {
+describe("Not allowed methods api/v1/status", () => {
   describe("Anonymous user", () => {
     describe("Trying bad requests", () => {
-      const notAllowedMethods = ["PUT", "PATCH", "DELETE"];
+      const notAllowedMethods = ["POST", "PUT", "PATCH", "DELETE"];
       for (const method of notAllowedMethods) {
         test(`${method} attempt`, async () => {
-          const response = await fetch(
-            "http://localhost:3000/api/v1/migrations",
-            {
-              method: method,
-            },
-          );
+          const response = await fetch("http://localhost:3000/api/v1/status", {
+            method: method,
+          });
           expect(response.status).toBe(405);
           const responseBody = await response.json();
           expect(responseBody).toEqual({
