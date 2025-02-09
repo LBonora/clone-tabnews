@@ -1,9 +1,6 @@
-import { resolve } from "node:path";
-
 import { createRouter } from "next-connect";
-import migrationRunner from "node-pg-migrate";
 
-import database from "infra/database.js";
+import migrator from "models/migrator.js";
 import controller from "infra/controller.js";
 
 const router = createRouter();
@@ -12,58 +9,15 @@ router.post(postHandler);
 
 export default router.handler(controller.errorHandlers);
 
-const defaultMigrationOption = {
-  dryRun: true,
-  dir: resolve("infra", "migrations"),
-  direction: "up",
-  verbose: true,
-  migrationsTable: "pgmigrations",
-};
-
 async function getHandler(request, response) {
-  let dbClient;
-  try {
-    dbClient = await database.getNewClient();
-    const pendingMigrations = await migrationRunner({
-      ...defaultMigrationOption,
-      dbClient,
-    });
-    response.status(200).json(pendingMigrations);
-  } finally {
-    await dbClient?.end();
-  }
+  const pendingMigrations = await migrator.runMigrations({ dryRun: true });
+  response.status(200).json(pendingMigrations);
 }
 
 async function postHandler(request, response) {
-  let dbClient;
-  try {
-    dbClient = await database.getNewClient();
-    const migratedMigrations = await migrationRunner({
-      ...defaultMigrationOption,
-      dbClient,
-      dryRun: false,
-    });
-    if (migratedMigrations.length > 0) {
-      return response.status(201).json(migratedMigrations);
-    }
-    return response.status(200).json([]);
-  } finally {
-    await dbClient?.end();
+  const migratedMigrations = await migrator.runMigrations({ dryRun: false });
+  if (migratedMigrations.length > 0) {
+    return response.status(201).json(migratedMigrations);
   }
-}
-
-export async function runMigrations({ dryRun = true }) {
-  const dbClient = await database.getNewClient();
-  try {
-    return await migrationRunner({
-      dbClient: dbClient,
-      dryRun: dryRun,
-      dir: resolve("infra", "migrations"),
-      direction: "up",
-      verbose: true,
-      migrationsTable: "pgmigrations",
-    });
-  } finally {
-    await dbClient?.end();
-  }
+  return response.status(200).json([]);
 }
