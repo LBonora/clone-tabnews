@@ -22,5 +22,9 @@ async function runMigrations({ dryRun } = { dryRun: true }) {
   }
 }
 
-const migrator = { runMigrations };
+const migrator = {
+  listPendingMigrations: () => runMigrations({ dryRun: true }),
+  runPendingMigrations: () => runMigrations({ dryRun: false }),
+};
+
 export default migrator;
