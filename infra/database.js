@@ -19,7 +19,7 @@ async function query(queryObject) {
     return result;
   } catch (error) {
     const serviceErrorObject = new ServiceError({
-      message: "Erro na Query.",
+      message: `Erro na Query: ${queryObject}`,
       cause: error,
     });
     throw serviceErrorObject;
@@ -40,6 +40,7 @@ async function getNewClient() {
 
   try {
     await client.connect();
+    return client;
   } catch (error) {
     client?.end();
     const serviceErrorObject = new ServiceError({
@@ -48,7 +49,6 @@ async function getNewClient() {
     });
     throw serviceErrorObject;
   }
-  return client;
 }
 
 const database = {
