@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "trap \"\" INT TERM && trap \"npm run services:stop\" 0 EXIT && npm run services:up && npm run services:wait:database && npm run migrations:up && next dev",
+    "dev:fail": "trap \"\" INT TERM && trap \"npm run services:stop\" 0 EXIT && npm run services:up && npm run services:wait:database && npm run migrations:up && POSTGRES_PASSWORD=0 next dev",
     "test": "trap \"\" INT TERM && trap \"npm run services:stop\" 0 EXIT && npm run services:up && concurrently -n next,jest --hide next -k -s command-jest --prefix none \"next dev\" \"jest --runInBand\"",
     "test:watch": "jest --watchAll --runInBand --verbose",
     "services:up": "docker compose -f infra/compose.yaml up -d",

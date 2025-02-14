@@ -12,15 +12,14 @@ async function query(queryObject) {
     ssl: getSSLValues(),
   });*/
 
-  let client;
+  const client = await getNewClient();
 
   try {
-    client = await getNewClient();
     const result = await client.query(queryObject);
     return result;
   } catch (error) {
     const serviceErrorObject = new ServiceError({
-      message: "Erro na Query ou na conexão com o Banco.",
+      message: `Erro na Query: ${queryObject}`,
       cause: error,
     });
     throw serviceErrorObject;
@@ -39,8 +38,17 @@ async function getNewClient() {
     ssl: getSSLValues(),
   });
 
-  await client.connect();
-  return client;
+  try {
+    await client.connect();
+    return client;
+  } catch (error) {
+    client?.end();
+    const serviceErrorObject = new ServiceError({
+      message: "Erro na conexão com o banco de dados.",
+      cause: error,
+    });
+    throw serviceErrorObject;
+  }
 }
 
 const database = {
