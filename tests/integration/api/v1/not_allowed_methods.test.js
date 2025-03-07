@@ -8,6 +8,7 @@ const root = "http://localhost:3000/";
 const endpoints = {
   "api/v1/status": ["POST", "PUT", "PATCH", "DELETE"],
   "api/v1/migrations": ["PUT", "PATCH", "DELETE"],
+  "api/v1/users": ["GET", "PUT", "PATCH", "DELETE"],
 };
 
 describe("Not allowed methods to all endpoints", () => {
