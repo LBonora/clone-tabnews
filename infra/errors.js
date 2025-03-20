@@ -26,6 +26,19 @@ export class MethodNotAllowedError extends CustomError {
   }
 }
 
+export class NotFoundError extends CustomError {
+  constructor({ message, action, cause }) {
+    super(message || "Não foi possível encontrar esse recurso no sistema.", {
+      name: "NotFoundError",
+      action:
+        action ||
+        "Verifique se os parâmetros enviados na consulta estão certos.",
+      statusCode: 404,
+      cause,
+    });
+  }
+}
+
 export class ServiceError extends CustomError {
   constructor({ message, cause }) {
     super(message || "Serviço indisponível no momento.", {
