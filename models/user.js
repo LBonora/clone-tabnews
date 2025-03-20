@@ -1,11 +1,48 @@
 import database from "infra/database.js";
-import { ValidationError } from "infra/errors.js";
+import { NotFoundError, ValidationError } from "infra/errors.js";
+
+const user = { findOneByUsername, create };
+export default user;
+
+async function findOneByUsername(username) {
+  const userFound = await runSelectQuery(username);
+  return userFound;
+
+  async function runSelectQuery(username) {
+    const results = await database.query({
+      text: "SELECT * FROM users WHERE LOWER(username) = LOWER($1) LIMIT 1;",
+      values: [username],
+    });
+
+    if (results.rowCount === 0) {
+      throw new NotFoundError({
+        name: "NotFoundError",
+        message: "O username informado não foi encontrado no sistema",
+        action: "Verifique se o username está digitado corretamente",
+        status_code: 404,
+      });
+    }
+    return results.rows[0];
+  }
+}
 
 async function create(userInputValues) {
   await validateUniqueUsername(userInputValues.username);
   await validateUniqueEmail(userInputValues.email);
   const newUser = await runInsertQuery(userInputValues);
   return newUser;
+
+  async function runInsertQuery(userInputValues) {
+    const results = await database.query({
+      text: "INSERT INTO users (username, email, password) VALUES ($1, $2, $3) RETURNING *;",
+      values: [
+        userInputValues.username,
+        userInputValues.email,
+        userInputValues.password,
+      ],
+    });
+    return results.rows[0];
+  }
 }
 
 async function validateUniqueUsername(username) {
@@ -35,19 +72,3 @@ async function validateUniqueEmail(email) {
     });
   }
 }
-
-async function runInsertQuery(userInputValues) {
-  const results = await database.query({
-    text: "INSERT INTO users (username, email, password) VALUES ($1, $2, $3) RETURNING *;",
-    values: [
-      userInputValues.username,
-      userInputValues.email,
-      userInputValues.password,
-    ],
-  });
-  return results.rows[0];
-}
-
-const user = { create };
-
-export default user;
