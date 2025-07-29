@@ -26,12 +26,36 @@ export class MethodNotAllowedError extends CustomError {
   }
 }
 
+export class NotFoundError extends CustomError {
+  constructor({ message, action, cause }) {
+    super(message || "Não foi possível encontrar esse recurso no sistema.", {
+      name: "NotFoundError",
+      action:
+        action ||
+        "Verifique se os parâmetros enviados na consulta estão certos.",
+      statusCode: 404,
+      cause,
+    });
+  }
+}
+
 export class ServiceError extends CustomError {
   constructor({ message, cause }) {
-    super(message || "Serviço indisponível no momento", {
+    super(message || "Serviço indisponível no momento.", {
       name: "ServiceError",
-      action: "Verifique se o serviço está disponível",
+      action: "Verifique se o serviço está disponível.",
       statusCode: 503,
+      cause,
+    });
+  }
+}
+
+export class ValidationError extends CustomError {
+  constructor({ message, action, cause }) {
+    super(message || "Aconteceu um erro de validação.", {
+      name: "ValidationError",
+      action: action || "Ajuste os dados enviados e tente novamente.",
+      statusCode: 400,
       cause,
     });
   }
@@ -41,7 +65,7 @@ export class InternalServerError extends CustomError {
   constructor({ cause, statusCode }) {
     super("Aconteceu um erro interno não esperado.", {
       name: "InternalServerError",
-      action: "Entre em contato com o suporte",
+      action: "Entre em contato com o suporte.",
       statusCode: statusCode || 500,
       cause,
     });
