@@ -1,5 +1,7 @@
 import { version as uuidVersion } from "uuid";
 import orchestrator from "tests/orchestrator.js";
+import user from "models/user.js";
+import password from "models/password";
 
 beforeAll(cleanDatabase);
 async function cleanDatabase() {
@@ -30,7 +32,7 @@ describe("POST api/v1/users", () => {
         id: responseBody.id,
         username: testUser.username,
         email: testUser.email,
-        password: testUser.password,
+        password: responseBody.password,
         created_at: responseBody.created_at,
         updated_at: responseBody.updated_at,
       });
@@ -38,6 +40,19 @@ describe("POST api/v1/users", () => {
       expect(uuidVersion(responseBody.id)).toEqual(4);
       expect(Date.parse(responseBody.created_at)).not.toBeNaN();
       expect(Date.parse(responseBody.updated_at)).not.toBeNaN();
+
+      const userInDatabase = await user.findOneByUsername(testUser.username);
+      const correctPasswordMatch = await password.compare(
+        testUser.password,
+        userInDatabase.password,
+      );
+      expect(correctPasswordMatch).toBe(true);
+
+      const incorrectPasswordMatch = await password.compare(
+        "incorrect",
+        userInDatabase.password,
+      );
+      expect(incorrectPasswordMatch).toBe(false);
     });
 
     test("with duplicated 'username'", async () => {
@@ -56,7 +71,7 @@ describe("POST api/v1/users", () => {
       expect(responseBody).toEqual({
         name: "ValidationError",
         message: "O username informado já está em uso.",
-        action: "Utilize outro username para realizar o cadastro.",
+        action: "Utilize outro username para realizar esta operação.",
         status_code: 400,
       });
     });
@@ -78,7 +93,7 @@ describe("POST api/v1/users", () => {
       expect(responseBody).toEqual({
         name: "ValidationError",
         message: "O email informado já está em uso.",
-        action: "Utilize outro email para realizar o cadastro.",
+        action: "Utilize outro email para realizar esta operação.",
         status_code: 400,
       });
     });
