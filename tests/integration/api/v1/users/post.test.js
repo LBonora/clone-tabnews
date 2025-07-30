@@ -71,7 +71,7 @@ describe("POST api/v1/users", () => {
       expect(responseBody).toEqual({
         name: "ValidationError",
         message: "O username informado já está em uso.",
-        action: "Utilize outro username para realizar o cadastro.",
+        action: "Utilize outro username para realizar esta operação.",
         status_code: 400,
       });
     });
@@ -93,7 +93,7 @@ describe("POST api/v1/users", () => {
       expect(responseBody).toEqual({
         name: "ValidationError",
         message: "O email informado já está em uso.",
-        action: "Utilize outro email para realizar o cadastro.",
+        action: "Utilize outro email para realizar esta operação.",
         status_code: 400,
       });
     });
