@@ -1,6 +1,8 @@
 import retry from "async-retry";
 import database from "infra/database.js";
 import migrator from "models/migrator.js";
+import user from "models/user.js";
+import password from "models/password";
 
 async function waitForAllServices() {
   await waitForWebServer();
@@ -31,10 +33,25 @@ async function runPendingMigrations() {
   await migrator.runPendingMigrations();
 }
 
+async function createUser(userObj) {
+  return await user.create({
+    username: userObj.username,
+    email: userObj.email,
+    password: userObj.password,
+  });
+}
+
+async function checkPassword(username, givenPassword) {
+  const userInDatabase = await user.findOneByUsername(username);
+  return await password.compare(givenPassword, userInDatabase.password);
+}
+
 const orchestrator = {
   waitForAllServices,
   clearDatabase,
   runPendingMigrations,
+  createUser,
+  checkPassword,
 };
 
 export default orchestrator;
