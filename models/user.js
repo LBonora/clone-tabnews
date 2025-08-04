@@ -2,7 +2,7 @@ import database from "infra/database.js";
 import password from "models/password.js";
 import { NotFoundError, ValidationError } from "infra/errors.js";
 
-const user = { findOneByUsername, create, update };
+const user = { findOneByUsername, findOneByEmail, create, update };
 export default user;
 
 async function findOneByUsername(username) {
@@ -20,6 +20,28 @@ async function findOneByUsername(username) {
         name: "NotFoundError",
         message: "O username informado não foi encontrado no sistema",
         action: "Verifique se o username está digitado corretamente",
+        status_code: 404,
+      });
+    }
+    return results.rows[0];
+  }
+}
+
+async function findOneByEmail(email) {
+  const userFound = await runSelectQuery(email);
+  return userFound;
+
+  async function runSelectQuery(email) {
+    const results = await database.query({
+      text: "SELECT * FROM users WHERE LOWER(email) = LOWER($1) LIMIT 1;",
+      values: [email],
+    });
+
+    if (results.rowCount === 0) {
+      throw new NotFoundError({
+        name: "NotFoundError",
+        message: "O email informado não foi encontrado no sistema",
+        action: "Verifique se o email está digitado corretamente",
         status_code: 404,
       });
     }

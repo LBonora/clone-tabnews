@@ -16,12 +16,24 @@ export class CustomError extends Error {
   }
 }
 
-export class MethodNotAllowedError extends CustomError {
-  constructor() {
-    super("Método não permitido para este endpoint.", {
-      name: "MethodNotAllowedError",
-      action: "Verifique se o método HTTP enviado é válido para esse endpoint.",
-      statusCode: 405,
+export class ValidationError extends CustomError {
+  constructor({ message, action, cause }) {
+    super(message || "Aconteceu um erro de validação.", {
+      name: "ValidationError",
+      action: action || "Ajuste os dados enviados e tente novamente.",
+      statusCode: 400,
+      cause,
+    });
+  }
+}
+
+export class UnauthorizedError extends CustomError {
+  constructor({ message, action, cause }) {
+    super(message || "Usuário não autenticado.", {
+      name: "UnauthorizedError",
+      action: action || "Faça novamente o login para continuar.",
+      statusCode: 401,
+      cause,
     });
   }
 }
@@ -39,24 +51,12 @@ export class NotFoundError extends CustomError {
   }
 }
 
-export class ServiceError extends CustomError {
-  constructor({ message, cause }) {
-    super(message || "Serviço indisponível no momento.", {
-      name: "ServiceError",
-      action: "Verifique se o serviço está disponível.",
-      statusCode: 503,
-      cause,
-    });
-  }
-}
-
-export class ValidationError extends CustomError {
-  constructor({ message, action, cause }) {
-    super(message || "Aconteceu um erro de validação.", {
-      name: "ValidationError",
-      action: action || "Ajuste os dados enviados e tente novamente.",
-      statusCode: 400,
-      cause,
+export class MethodNotAllowedError extends CustomError {
+  constructor() {
+    super("Método não permitido para este endpoint.", {
+      name: "MethodNotAllowedError",
+      action: "Verifique se o método HTTP enviado é válido para esse endpoint.",
+      statusCode: 405,
     });
   }
 }
@@ -67,6 +67,17 @@ export class InternalServerError extends CustomError {
       name: "InternalServerError",
       action: "Entre em contato com o suporte.",
       statusCode: statusCode || 500,
+      cause,
+    });
+  }
+}
+
+export class ServiceError extends CustomError {
+  constructor({ message, cause }) {
+    super(message || "Serviço indisponível no momento.", {
+      name: "ServiceError",
+      action: "Verifique se o serviço está disponível.",
+      statusCode: 503,
       cause,
     });
   }
