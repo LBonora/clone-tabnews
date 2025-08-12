@@ -41,9 +41,9 @@ async function createUser(userObj) {
   });
 }
 
-async function checkPassword(username, givenPassword) {
+async function checkPassword(username, providedPassword) {
   const userInDatabase = await user.findOneByUsername(username);
-  return await password.compare(givenPassword, userInDatabase.password);
+  return await password.compare(providedPassword, userInDatabase.password);
 }
 
 const orchestrator = {
