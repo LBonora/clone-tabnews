@@ -13,9 +13,7 @@ beforeAll(async () => {
   await orchestrator.waitForAllServices();
   await orchestrator.clearDatabase();
   await orchestrator.runPendingMigrations();
-  const createdUser = await orchestrator.createUser(testUser);
-  testUser.id = createdUser.id;
-  //Object.assign(testUser, createdUser);
+  await orchestrator.createUser(testUser);
 });
 
 describe("POST api/v1/users", () => {
@@ -86,9 +84,10 @@ describe("POST api/v1/users", () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           email: testUser.email,
-          password: testUser.password,
+          password: "senha-correta",
         }),
       });
+
       expect(response.status).toBe(201);
 
       const responseBody = await response.json();
